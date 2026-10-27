@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binary &amp; ASCII Toolkit</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#6b7385;--accent:#2f6fed;--ok:#1a9e55;--bad:#d64545;--line:#dde1ea;--on:#2f6fed;--off:#e7eaf2}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b2030;--text:#e8ebf3;--muted:#98a1b5;--accent:#6b9bff;--ok:#43c681;--bad:#ff6b6b;--line:#2c3348;--on:#6b9bff;--off:#2a3043}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+header{padding:20px 16px 0;max-width:900px;margin:0 auto}
+h1{margin:0 0 12px;font-size:1.6rem}
+nav{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line)}
+nav a{padding:8px 14px;text-decoration:none;color:var(--muted);font-weight:600;border-radius:8px 8px 0 0}
+nav a.on{color:var(--accent);border-bottom:3px solid var(--accent);margin-bottom:-2px}
+main{max-width:900px;margin:0 auto;padding:16px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+h2{margin-top:0}
+input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);width:100%;max-width:300px;font-family:ui-monospace,Menlo,Consolas,monospace}
+button{font:inherit;padding:8px 14px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;font-weight:600}
+label{cursor:pointer;margin-right:14px}
+.result{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.5rem;margin:14px 0;word-break:break-all}
+.err{color:var(--bad)}
+pre.steps{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font-size:.95rem;margin:8px 0}
+.tablewrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:5px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);border-bottom:2px solid var(--line)}
+td.m{font-family:ui-monospace,Menlo,Consolas,monospace}
+td.ctl{color:var(--muted);font-style:italic}
+.clockrow{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap}
+.clockrow .lbl{width:80px;font-weight:600}
+.bit{width:38px;height:38px;border-radius:50%;background:var(--off);color:var(--muted);display:flex;align-items:center;justify-content:center;font-family:ui-monospace,monospace;font-weight:700}
+.bit.on{background:var(--on);color:#fff}
+.w{width:38px;text-align:center;font-size:.75rem;color:var(--muted)}
+.dec{font-family:ui-monospace,monospace;font-size:1.3rem;margin-left:8px}
+.q{font-size:1.4rem;font-family:ui-monospace,Menlo,Consolas,monospace;margin:12px 0}
+.fb{margin:10px 0;font-weight:600}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.small{color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<header>
+<h1>Binary &amp; ASCII Toolkit</h1>
+<nav>
+<a href="#d2b">Decimal → Binary</a>
+<a href="#b2d">Binary → Decimal</a>
+<a href="#ascii">ASCII Table</a>
+<a href="#clock">Binary Clock</a>
+<a href="#practice">Practice</a>
+</nav>
+</header>
+<main>
+
+<section id="d2b">
+<h2>Decimal → Binary</h2>
+<input type="text" id="d2bIn" inputmode="numeric" placeholder="Enter a decimal number" autocomplete="off">
+<div class="result" id="d2bOut"></div>
+<label><input type="checkbox" id="d2bShow"> Show explanation</label>
+<div id="d2bSteps"></div>
+</section>
+
+<section id="b2d">
+<h2>Binary → Decimal</h2>
+<input type="text" id="b2dIn" inputmode="numeric" placeholder="Enter a binary number" autocomplete="off">
+<div class="result" id="b2dOut"></div>
+<label><input type="checkbox" id="b2dShow"> Show explanation</label>
+<div id="b2dSteps"></div>
+</section>
+
+<section id="ascii">
+<h2>ASCII Table</h2>
+<label><input type="checkbox" id="tOct"> Show octal</label>
+<label><input type="checkbox" id="tHex"> Show hex</label>
+<p class="small">Codes 0–127 are standard ASCII. Codes 128–255 use the common ISO-8859-1 (Latin-1) extended set; other extended sets differ.</p>
+<div class="tablewrap"><table id="asciiTbl"></table></div>
+</section>
+
+<section id="clock">
+<h2>Binary Clock</h2>
+<p class="small">Hours (24-hour), minutes and seconds, each shown as a 6-bit binary number.</p>
+<div id="clockBox"></div>
+<div class="result" id="clockText"></div>
+</section>
+
+<section id="practice">
+<h2>Practice</h2>
+<p class="small">Convert the number. You get three guesses. Score: <span id="score">0 / 0</span></p>
+<div class="q" id="pQ"></div>
+<input type="text" id="pIn" inputmode="numeric" autocomplete="off" placeholder="Your answer">
+<button id="pBtn">Check</button>
+<button id="pNext" hidden>Next number</button>
+<div class="fb" id="pFb"></div>
+<div id="pSteps"></div>
+</section>
+
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const pages=['d2b','b2d','ascii','clock','practice'];
+function route(){
+  let h=location.hash.slice(1); if(!pages.includes(h))h='d2b';
+  pages.forEach(p=>{$(p).hidden=p!==h;document.querySelector('nav a[href="#'+p+'"]').classList.toggle('on',p===h)});
+}
+addEventListener('hashchange',route);route();
+
+/* ---------- step builders ---------- */
+function divSteps(n){
+  let L=[],x=n,rem=[];
+  if(n===0)L.push('0 ÷ 2 = 0 remainder 0'),rem.push(0);
+  while(x>0){const q=Math.floor(x/2),r=x%2;L.push(x+' ÷ 2 = '+q+'  remainder '+r);rem.push(r);x=q}
+  L.push('','Read the remainders from bottom to top: '+rem.reverse().join(''));
+  return L;
+}
+function placeSteps(n){
+  const len=Math.max(8,n.toString(2).length);let rem=n,bits='',L=[];
+  for(let e=len-1;e>=0;e--){const p=2**e;
+    if(rem>=p){L.push('2^'+e+' = '+p+':  '+rem+' ≥ '+p+' → 1, then '+rem+' − '+p+' = '+(rem-p));rem-=p;bits+='1'}
+    else{L.push('2^'+e+' = '+p+':  '+rem+' < '+p+' → 0');bits+='0'}}
+  L.push('','Result: '+bits);return L;
+}
+function powSteps(b){
+  const n=b.length;let L=[],terms=[],tot=0;
+  for(let i=0;i<n;i++){const e=n-1-i,bit=+b[i],v=bit*2**e;tot+=v;terms.push(v);
+    L.push(bit+' × 2^'+e+' = '+bit+' × '+2**e+' = '+v)}
+  L.push('','Add them up: '+terms.join(' + ')+' = '+tot);return L;
+}
+const pre=L=>'<pre class="steps">'+L.join('\n')+'</pre>';
+
+/* ---------- decimal → binary ---------- */
+function d2b(){
+  const v=$('d2bIn').value.trim(),o=$('d2bOut'),s=$('d2bSteps');s.innerHTML='';
+  if(!v){o.textContent='';return}
+  if(!/^\d+$/.test(v)||+v>65535){o.innerHTML='<span class="err">Enter a whole number from 0 to 65535.</span>';return}
+  const n=+v;o.textContent=n.toString(2);
+  if($('d2bShow').checked)s.innerHTML='<b>Method 1: divide by 2</b>'+pre(divSteps(n))+'<b>Method 2: powers of 2</b>'+pre(placeSteps(n));
+}
+/* ---------- binary → decimal ---------- */
+function b2d(){
+  const v=$('b2dIn').value.replace(/\s/g,''),o=$('b2dOut'),s=$('b2dSteps');s.innerHTML='';
+  if(!v){o.textContent='';return}
+  if(!/^[01]+$/.test(v)||v.length>16){o.innerHTML='<span class="err">Enter up to 16 bits using only 0 and 1.</span>';return}
+  o.textContent=parseInt(v,2);
+  if($('b2dShow').checked)s.innerHTML='<b>Each bit × its power of 2</b>'+pre(powSteps(v));
+}
+['d2bIn','d2bShow'].forEach(i=>$(i).addEventListener('input',d2b));
+['b2dIn','b2dShow'].forEach(i=>$(i).addEventListener('input',b2d));
+$('d2bShow').addEventListener('change',d2b);$('b2dShow').addEventListener('change',b2d);
+
+/* ---------- ASCII table ---------- */
+const ctlAbbr='NUL SOH STX ETX EOT ENQ ACK BEL BS HT LF VT FF CR SO SI DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM SUB ESC FS GS RS US'.split(' ');
+const ctlName=['Null','Start of Heading','Start of Text','End of Text','End of Transmission','Enquiry','Acknowledge','Bell','Backspace','Horizontal Tab','Line Feed','Vertical Tab','Form Feed','Carriage Return','Shift Out','Shift In','Data Link Escape','Device Control 1','Device Control 2','Device Control 3','Device Control 4','Negative Acknowledge','Synchronous Idle','End of Transmission Block','Cancel','End of Medium','Substitute','Escape','File Separator','Group Separator','Record Separator','Unit Separator'];
+const c1='PAD HOP BPH NBH IND NEL SSA ESA HTS HTJ VTS PLD PLU RI SS2 SS3 DCS PU1 PU2 STS CCH MW SPA EPA SOS SGCI SCI CSI ST OSC PM APC'.split(' ');
+const punct={'!':'Exclamation mark','"':'Double quote','#':'Number sign (hash)','$':'Dollar sign','%':'Percent sign','&':'Ampersand',"'":'Apostrophe','(':'Left parenthesis',')':'Right parenthesis','*':'Asterisk','+':'Plus sign',',':'Comma','-':'Hyphen-minus','.':'Period','/':'Slash',':':'Colon',';':'Semicolon','<':'Less-than sign','=':'Equals sign','>':'Greater-than sign','?':'Question mark','@':'At sign','[':'Left bracket','\\':'Backslash',']':'Right bracket','^':'Caret','_':'Underscore','`':'Grave accent','{':'Left brace','|':'Vertical bar','}':'Right brace','~':'Tilde'};
+function asciiRow(n){
+  const ch=String.fromCharCode(n);
+  if(n<32)return[ctlAbbr[n],ctlName[n]+' (control)',1];
+  if(n===32)return['SP','Space',1];
+  if(n===127)return['DEL','Delete (control)',1];
+  if(n>=128&&n<160)return[c1[n-128],'Extended control character',1];
+  if(n===160)return['NBSP','Non-breaking space',1];
+  if(n===173)return['SHY','Soft hyphen',1];
+  let d;
+  if(n>=48&&n<=57)d='Digit '+ch;
+  else if(n>=65&&n<=90)d='Uppercase letter '+ch;
+  else if(n>=97&&n<=122)d='Lowercase letter '+ch;
+  else if(n<128)d=punct[ch];
+  else d='Extended (Latin-1) character';
+  return[ch,d,0];
+}
+function buildTable(){
+  const oct=$('tOct').checked,hex=$('tHex').checked,t=$('asciiTbl');
+  let h='<thead><tr><th>Value</th><th>Description</th><th>Decimal</th><th>Binary</th>'+(oct?'<th>Octal</th>':'')+(hex?'<th>Hex</th>':'')+'</tr></thead><tbody>';
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  for(let n=0;n<256;n++){
+    const[v,d,c]=asciiRow(n);
+    h+='<tr><td class="m'+(c?' ctl':'')+'">'+esc(v)+'</td><td>'+esc(d)+'</td><td class="m">'+n+'</td><td class="m">'+n.toString(2).padStart(8,'0')+'</td>'
+      +(oct?'<td class="m">'+n.toString(8).padStart(3,'0')+'</td>':'')+(hex?'<td class="m">'+n.toString(16).toUpperCase().padStart(2,'0')+'</td>':'')+'</tr>';
+  }
+  t.innerHTML=h+'</tbody>';
+}
+$('tOct').addEventListener('change',buildTable);$('tHex').addEventListener('change',buildTable);buildTable();
+
+/* ---------- binary clock ---------- */
+function clockTick(){
+  const d=new Date(),parts=[['Hours',d.getHours()],['Minutes',d.getMinutes()],['Seconds',d.getSeconds()]];
+  let h='<div class="clockrow"><span class="lbl"></span>'+[32,16,8,4,2,1].map(w=>'<span class="w">'+w+'</span>').join('')+'</div>';
+  const strs=[];
+  parts.forEach(([name,val])=>{
+    const b=val.toString(2).padStart(6,'0');strs.push(b);
+    h+='<div class="clockrow"><span class="lbl">'+name+'</span>'+[...b].map(x=>'<span class="bit'+(x==='1'?' on':'')+'">'+x+'</span>').join('')+'<span class="dec">'+String(val).padStart(2,'0')+'</span></div>';
+  });
+  $('clockBox').innerHTML=h;
+  $('clockText').textContent=strs.join(' : ');
+}
+clockTick();setInterval(clockTick,250);
+
+/* ---------- practice ---------- */
+let P={mode:'d2b',n:0,left:3,done:false},right=0,total=0;
+function newQ(){
+  P.mode=Math.random()<.5?'d2b':'b2d';P.n=Math.floor(Math.random()*256);P.left=3;P.done=false;
+  $('pQ').textContent=P.mode==='d2b'?'Convert decimal '+P.n+' to binary':'Convert binary '+P.n.toString(2).padStart(8,'0')+' to decimal';
+  $('pIn').value='';$('pIn').disabled=false;$('pBtn').hidden=false;$('pNext').hidden=true;
+  $('pFb').textContent='';$('pFb').className='fb';$('pSteps').innerHTML='';$('pIn').focus();
+}
+function reveal(){
+  const b=P.n.toString(2).padStart(8,'0');
+  $('pSteps').innerHTML=P.mode==='b2d'
+    ?'<b>'+b+' → '+P.n+'</b>'+pre(powSteps(b))
+    :'<b>'+P.n+' → '+b+'</b><b> (divide by 2)</b>'+pre(divSteps(P.n))+'<b>Check with powers of 2</b>'+pre(placeSteps(P.n))+'<b>Check by adding</b>'+pre(powSteps(b));
+  $('pIn').disabled=true;$('pBtn').hidden=true;$('pNext').hidden=false;P.done=true;
+  $('score').textContent=right+' / '+total;
+}
+function check(){
+  if(P.done)return;
+  const g=$('pIn').value.replace(/\s/g,'');if(!g)return;
+  const fb=$('pFb');
+  const ok=P.mode==='d2b'?(/^[01]+$/.test(g)&&parseInt(g,2)===P.n):(/^\d+$/.test(g)&&+g===P.n);
+  const ans=P.mode==='d2b'?P.n.toString(2).padStart(8,'0'):P.n;
+  if(ok){total++;right++;fb.className='fb ok';fb.textContent='Correct! The answer is '+ans+'.';reveal();return}
+  P.left--;
+  if(P.left===0){total++;fb.className='fb bad';fb.textContent='Out of guesses. The answer is '+ans+'.';reveal();return}
+  fb.className='fb bad';fb.textContent='Not quite. '+P.left+' guess'+(P.left===1?'':'es')+' left.';
+  $('pIn').select();
+}
+$('pBtn').addEventListener('click',check);
+$('pNext').addEventListener('click',newQ);
+$('pIn').addEventListener('keydown',e=>{if(e.key==='Enter')check()});
+newQ();
+</script>
+</body>
+</html>
